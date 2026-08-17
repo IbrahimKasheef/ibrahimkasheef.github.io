@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>~/portfolio — bash</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="split-container">
+  <div class="left-panel">
+    <div id="webView" style="display:none; width:100%; height:100%; overflow-y:auto; position:relative; z-index:1;">
+<div class="dot-grid"></div>
+<div class="vignette"></div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">portfolio</a>
+    <ul class="nav-links">
+      <li><a href="#about" class="nav-link">About</a></li>
+      <li><a href="#pocs" class="nav-link">PoCs</a></li>
+      <li><a href="#repos" class="nav-link">Repos</a></li>
+      <li><a href="#reports" class="nav-link">Reports</a></li>
+      <li><a href="#notes" class="nav-link">Notes</a></li>
+      <li><a href="#wip" class="nav-link">WIP</a></li>
+      <li><a href="#contact" class="nav-link">Contact</a></li>
+      <li><a href="#" class="nav-link" onclick="switchToTerminal(); return false;">💻 Terminal</a></li>
+    </ul>
+    <div class="nav-mobile-controls">
+      <button class="nav-icon-btn" onclick="openReconOverlay()" title="Live Recon" aria-label="Open live recon">🔍</button>
+      <button class="nav-icon-btn nav-terminal-btn" onclick="switchToTerminal()" title="Terminal" aria-label="Switch to terminal">Terminal 💻</button>
+      <button class="nav-icon-btn" onclick="openMobileNav()" title="Menu" aria-label="Open menu">☰</button>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-nav-overlay" id="mobileNavOverlay">
+  <div class="mobile-nav-panel">
+    <div class="mobile-nav-header">
+      <span>Jump to</span>
+      <button class="mobile-nav-close" onclick="closeMobileNav()" aria-label="Close menu">✕</button>
+    </div>
+    <a href="#about" class="mobile-nav-link" onclick="closeMobileNav()">About</a>
+    <a href="#pocs" class="mobile-nav-link" onclick="closeMobileNav()">PoCs</a>
+    <a href="#repos" class="mobile-nav-link" onclick="closeMobileNav()">Repos</a>
+    <a href="#reports" class="mobile-nav-link" onclick="closeMobileNav()">Reports</a>
+    <a href="#notes" class="mobile-nav-link" onclick="closeMobileNav()">Notes</a>
+    <a href="#wip" class="mobile-nav-link" onclick="closeMobileNav()">WIP</a>
+    <a href="#contact" class="mobile-nav-link" onclick="closeMobileNav()">Contact</a>
+    <a href="#" class="mobile-nav-link mobile-nav-terminal" onclick="closeMobileNav(); switchToTerminal(); return false;">💻 Terminal</a>
+  </div>
+</div>
+
+<section id="home">
+  <div class="hero-badge" id="heroBadge">Available for security research</div>
+  <h1>Security Researcher<br><span class="accent">& Developer</span></h1>
+  <p class="hero-sub" id="heroSub">
+    Finding vulnerabilities, building proof-of-concepts, and writing about the intersection of code and security. Based on real-world findings.
+  </p>
+  <div class="hero-links">
+    <a href="https://github.com/yourusername" class="btn btn-primary" id="heroGithubLink" target="_blank">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      GitHub
+    </a>
+    <a href="#contact" class="btn btn-ghost">Get in touch</a>
+  </div>
+</section>
+
+<section id="about">
+  <div class="section-header fade-in">
+    <span class="section-tag">$ cat ~/about-me.txt</span>
+    <h2>About Me</h2>
+  </div>
+  <div class="terminal-window fade-in">
+    <div class="terminal-header">
+      <div class="terminal-btn red"></div>
+      <div class="terminal-btn amber"></div>
+      <div class="terminal-btn green"></div>
+      <span class="terminal-title">about-me — bash — 80x24</span>
+    </div>
+    <div class="terminal-body">
+      <div class="terminal-line">
+        <span class="terminal-prompt">whoami</span>
+        <div class="terminal-output" id="aboutWhoami"></div>
+      </div>
+      <div class="terminal-line">
+        <span class="terminal-prompt">cat interests.txt</span>
+        <div class="terminal-output" id="aboutInterests"></div>
+      </div>
+      <div class="terminal-line">
+        <span class="terminal-prompt">ls skills/</span>
+        <div class="skill-tags" id="aboutSkills"></div>
+      </div>
+      <div class="terminal-line">
+        <span class="terminal-prompt">echo $CURRENT_FOCUS</span>
+        <div class="terminal-output cursor-blink" id="aboutFocus"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pocs">
+  <div class="section-header fade-in">
+    <span class="section-tag" id="pocsSectionTag">$ ls ./proof-of-concepts</span>
+    <h2 id="pocsSectionHeading">Proof of Concepts</h2>
+    <p class="section-desc" id="pocsSectionDesc">Validated vulnerabilities, exploit chains, and security findings from real-world assessments.</p>
+  </div>
+  <!-- Populated by renderWebSections() in app.js from content.json (~/proof-of-concepts).
+       Add/edit/remove items there — or via admin.html — instead of editing this markup. -->
+  <div class="grid" id="pocsGrid"></div>
+</section>
+
+<section id="repos">
+  <div class="section-header fade-in">
+    <span class="section-tag" id="reposSectionTag">$ gh repo list</span>
+    <h2 id="reposSectionHeading">Repositories</h2>
+    <p class="section-desc" id="reposSectionDesc">Open-source tools, scripts, and experiments. Mostly security-related.</p>
+  </div>
+  <!-- Populated by renderWebSections() in app.js from content.json (~/repositories). -->
+  <div class="grid" id="reposGrid"></div>
+</section>
+
+<section id="reports">
+  <div class="section-header fade-in">
+    <span class="section-tag" id="reportsSectionTag">$ cat ./reports/*.md</span>
+    <h2 id="reportsSectionHeading">Reports</h2>
+    <p class="section-desc" id="reportsSectionDesc">Write-ups, walkthroughs, and thoughts on security research and development.</p>
+  </div>
+  <!-- Populated by renderWebSections() in app.js from content.json (~/reports). -->
+  <div class="report-list" id="reportsList"></div>
+</section>
+
+<section id="notes">
+  <div class="section-header fade-in">
+    <span class="section-tag" id="notesSectionTag">$ cat ./notes.txt</span>
+    <h2 id="notesSectionHeading">Notes</h2>
+    <p class="section-desc" id="notesSectionDesc">Quick thoughts, observations, and things I don't want to forget. Micro-updates between reports.</p>
+  </div>
+  <!-- Populated by renderWebSections() in app.js from content.json (~/notes). -->
+  <div class="notes-grid" id="notesGrid"></div>
+</section>
+
+<section id="wip">
+  <div class="section-header fade-in">
+    <span class="section-tag" id="wipSectionTag">$ ps aux | grep wip</span>
+    <h2 id="wipSectionHeading">Work in Progress</h2>
+    <p class="section-desc" id="wipSectionDesc">Projects currently being built, researched, or refined.</p>
+  </div>
+  <!-- Populated by renderWebSections() in app.js from content.json (~/work-in-progress). -->
+  <div class="grid" id="wipGrid"></div>
+</section>
+
+<section id="contact">
+  <div class="section-header fade-in">
+    <span class="section-tag">$ mail -s "hello"</span>
+    <h2>Get in Touch</h2>
+    <p class="section-desc">Open to collaborations, bug bounty invites, security research opportunities, or just a good conversation.</p>
+  </div>
+  <div class="contact-grid fade-in">
+    <div class="contact-info">
+      <h3>Let's talk</h3>
+      <p>
+        I'm always interested in hearing about new projects, vulnerabilities that need a second pair of eyes or opportunities to contribute to security research.
+      </p>
+      <p>
+        Whether you're a student looking for guidance, a company with a bug bounty program or a researcher working on something cool, reach out.
+      </p>
+      <div class="contact-links">
+        <a href="https://github.com/yourusername" class="contact-link" id="contactGithubLink" target="_blank">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          <span class="link-label">github.com/yourusername</span>
+        </a>
+        <a href="https://mastodon.social/@yourusername" class="contact-link" id="contactMastodonLink" target="_blank">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M23.268 5.313c-.35-2.578-2.617-4.61-5.304-5.004C17.51.242 15.792 0 11.813 0h-.03c-3.98 0-4.835.242-5.288.309C3.882.692 1.496 2.518.917 5.127.64 6.412.61 7.837.661 9.143c.074 1.874.088 3.745.26 5.611.118 1.24.325 2.47.62 3.68.55 2.237 2.777 4.098 4.96 4.857 2.336.792 4.849.923 7.256.38.265-.061.527-.132.786-.213.585-.184 1.27-.39 1.774-.753a.057.057 0 0 0 .023-.043v-1.809a.052.052 0 0 0-.02-.041.053.053 0 0 0-.046-.01 20.282 20.282 0 0 1-4.709.545c-2.73 0-3.463-1.284-3.674-1.818a5.593 5.593 0 0 1-.319-1.433.053.053 0 0 1 .066-.054c1.517.363 3.072.546 4.632.546.376 0 .75 0 1.125-.01 1.57-.044 3.224-.124 4.768-.422.038-.008.077-.015.11-.024 2.435-.464 4.753-1.92 4.989-5.604.008-.145.03-1.52.03-1.67.002-.512.167-3.63-.025-5.545zm-3.325 9.454h-2.351V9.769c0-1.161-.489-1.751-1.485-1.751-1.094 0-1.644.708-1.644 2.11v3.06h-2.337v-3.06c0-1.402-.55-2.11-1.644-2.11-.996 0-1.485.59-1.485 1.751v4.998H6.647V9.586c0-1.161.293-2.084.882-2.766.606-.682 1.4-1.032 2.387-1.032 1.142 0 2.007.439 2.582 1.316l.556.933.556-.933c.575-.877 1.44-1.316 2.582-1.316.987 0 1.781.35 2.387 1.032.589.682.882 1.605.882 2.766v5.181z"/></svg>
+          <span class="link-label">mastodon.social/@yourusername</span>
+        </a>
+        <a href="https://discord.gg/yourinvite" class="contact-link" id="contactDiscordLink" target="_blank">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>
+          <span class="link-label" id="contactDiscordLabel">Discord</span>
+        </a>
+        <a href="mailto:you@example.com" class="contact-link" id="contactEmailLink">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          <span class="link-label">you@example.com</span>
+        </a>
+        <a href="#" class="contact-link">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <span class="link-label" id="contactLocationLabel">India</span>
+        </a>
+      </div>
+    </div>
+    <div class="contact-form">
+      <form id="contactForm">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" placeholder="Your name" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" placeholder="What's on your mind?" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary form-submit">Send Message</button>
+      </form>
+      <p class="form-status"></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Built with plain HTML & CSS. Hosted on <a href="https://pages.github.com" target="_blank">GitHub Pages</a>.</p>
+  <p style="margin-top: 8px; opacity: 0.6;">© 2026 - No trackers, no frameworks, no bloat. · <a href="admin.html" style="color: inherit;">Manage content</a></p>
+</footer>
+
+<div id="contentViewer" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(10,14,20,0.98); z-index:1000; overflow-y:auto;">
+  <div id="cvContentWrap" style="max-width:960px; margin:0 auto; padding:40px 24px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid var(--web-border);">
+      <div>
+        <div id="cvDate" style="font-family:var(--web-mono); font-size:12px; color:var(--web-text-secondary); margin-bottom:4px;"></div>
+        <h2 id="cvTitle" style="font-size:24px; font-weight:700; margin:0; color:var(--web-text);"></h2>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <a id="cvRepoLink" href="#" target="_blank" style="display:none; font-family:var(--web-mono); font-size:12px; color:var(--web-accent); text-decoration:none; border:1px solid var(--web-border); padding:8px 12px; border-radius:8px; white-space:nowrap;">↗ View on GitHub</a>
+        <button onclick="closeContentViewer()" style="background:transparent; border:1px solid var(--web-border); color:var(--web-text); padding:8px 16px; border-radius:8px; cursor:pointer; font-family:var(--web-font); font-size:13px;">✕ Close</button>
+      </div>
+    </div>
+    <div id="cvBody"></div>
+  </div>
+</div>
+
+    </div>
+    <div class="terminal" id="terminalWrap">
+      <div class="titlebar">
+        <div class="titlebar-side titlebar-left">
+          <div class="window-btns">
+            <div class="wbtn close" onclick="window.close()" title="Close tab"></div>
+            <div class="wbtn min" onclick="alert('Minimize not implemented in browser :)')" title="Minimize"></div>
+            <div class="wbtn max" onclick="toggleFullscreen()" title="Fullscreen"></div>
+          </div>
+        </div>
+        <div class="title-text">portfolio — bash — 80×24</div>
+        <div class="titlebar-side titlebar-right">
+          <button class="nav-icon-btn titlebar-recon-btn" onclick="openReconOverlay()" title="Live Recon" aria-label="Open live recon">🔍</button>
+          <div class="web-hint" onclick="toggleTheme()" title="Switch to Web View">
+            <span class="web-hint-text">normal website</span>
+            <span class="web-hint-arrow">→</span>
+          </div>
+          <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Switch to Web View">🌐 Web</div>
+        </div>
+      </div>
+
+      <div class="tabbar" id="tabbar">
+        <div class="tab-new" onclick="goHome()" title="New tab">+</div>
+      </div>
+
+      <div class="terminal-body" id="terminalBody">
+        <!-- Panes generated dynamically by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <div class="resizer" id="resizer"></div>
+
+  <div class="right-panel">
+    <div class="right-tabs">
+      <div class="right-tab active" onclick="switchRightTab('recon')">🔍 Recon</div>
+      <div class="right-tab" onclick="switchRightTab('metrics')">📊 Live Metrics</div>
+      <button class="right-panel-close" onclick="closeReconOverlay()" aria-label="Close" title="Close">✕</button>
+    </div>
+
+    <!-- RECON TAB -->
+    <div class="right-tab-pane active" id="right-recon">
+      <div class="recon-header">
+        <div class="recon-title">🔍 Visitor Recon</div>
+        <div class="recon-subtitle">Browser Fingerprinting · Data Exposure Demo</div>
+        <div class="recon-status">
+          <span class="status-dot" style="background:var(--red);box-shadow:0 0 6px var(--red);"></span>
+          <span style="color:var(--red)">LIVE</span> — Passive reconnaissance active
+        </div>
+      </div>
+
+      <div class="recon-body" id="reconBody">
+        <div class="recon-warning" style="margin-bottom:20px;">
+          <div class="recon-warning-icon">⚠️</div>
+          <div>
+            <div style="font-weight:600;color:var(--amber);margin-bottom:4px;">Everything below was collected passively.</div>
+            <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">
+              No prompts. No permissions. No "Accept Cookies" banner. This is what every website you visit can see about you, and often much more. A malicious actor could use this to track, profile or target you. I built this to show you that, not to exploit it. <span style="color:var(--green)">Your data stays here.</span>
+            </div>
+          </div>
+        </div>
+        
+
+        <div class="recon-section">
+          <div class="recon-section-title">System Specs</div>
+          <div class="recon-grid">
+            <div class="recon-item"><span class="recon-label">OS</span><span class="recon-value" id="fp-os">—</span></div>
+            <div class="recon-item"><span class="recon-label">Browser</span><span class="recon-value" id="fp-browser">—</span></div>
+            <div class="recon-item"><span class="recon-label">Platform</span><span class="recon-value" id="fp-platform">—</span></div>
+            <div class="recon-item"><span class="recon-label">CPU Cores</span><span class="recon-value" id="fp-cores">—</span></div>
+            <div class="recon-item"><span class="recon-label">RAM (GB)</span><span class="recon-value" id="fp-ram">—</span></div>
+            <div class="recon-item"><span class="recon-label">Architecture</span><span class="recon-value" id="fp-arch">—</span></div>
+            <div class="recon-item"><span class="recon-label">Screen</span><span class="recon-value" id="fp-screen">—</span></div>
+            <div class="recon-item"><span class="recon-label">Viewport</span><span class="recon-value" id="fp-viewport">—</span></div>
+            <div class="recon-item"><span class="recon-label">Color Depth</span><span class="recon-value" id="fp-color">—</span></div>
+            <div class="recon-item"><span class="recon-label">Pixel Ratio</span><span class="recon-value" id="fp-dpr">—</span></div>
+            <div class="recon-item"><span class="recon-label">Language</span><span class="recon-value" id="fp-lang">—</span></div>
+            <div class="recon-item"><span class="recon-label">Timezone</span><span class="recon-value" id="fp-tz">—</span></div>
+            <div class="recon-item"><span class="recon-label">Connection</span><span class="recon-value" id="fp-conn">—</span></div>
+            <div class="recon-item"><span class="recon-label">Network RTT</span><span class="recon-value" id="fp-rtt">—</span></div>
+            <div class="recon-item"><span class="recon-label">Save Data</span><span class="recon-value" id="fp-savedata">—</span></div>
+            <div class="recon-item"><span class="recon-label">Touch</span><span class="recon-value" id="fp-touch">—</span></div>
+            <div class="recon-item"><span class="recon-label">Cookies</span><span class="recon-value" id="fp-cookies">—</span></div>
+            <div class="recon-item"><span class="recon-label">Do Not Track</span><span class="recon-value" id="fp-dnt">—</span></div>
+            <div class="recon-item"><span class="recon-label">Online</span><span class="recon-value" id="fp-online">—</span></div>
+            <div class="recon-item"><span class="recon-label">PDF Viewer</span><span class="recon-value" id="fp-pdf">—</span></div>
+            <div class="recon-item"><span class="recon-label">Java</span><span class="recon-value" id="fp-java">—</span></div>
+            <div class="recon-item"><span class="recon-label">Dark Mode</span><span class="recon-value" id="fp-dark">—</span></div>
+            <div class="recon-item"><span class="recon-label">Reduced Motion</span><span class="recon-value" id="fp-motion">—</span></div>
+            <div class="recon-item"><span class="recon-label">Orientation</span><span class="recon-value" id="fp-orient">—</span></div>
+          </div>
+        </div>
+
+        <div class="recon-section">
+          <div class="recon-section-title">Browser Fingerprint</div>
+          <div class="recon-item" style="flex-direction:column;align-items:flex-start;gap:4px;">
+            <span class="recon-label">User Agent</span>
+            <span class="recon-value" id="fp-ua" style="font-size:10px;word-break:break-all;color:var(--text-dim);">—</span>
+          </div>
+          <div class="recon-item" style="flex-direction:column;align-items:flex-start;gap:4px;margin-top:8px;">
+            <span class="recon-label">Canvas Fingerprint</span>
+            <span class="recon-value" id="fp-canvas" style="font-size:10px;word-break:break-all;color:var(--magenta);font-family:monospace;">—</span>
+          </div>
+          <div class="recon-item" style="flex-direction:column;align-items:flex-start;gap:4px;margin-top:8px;">
+            <span class="recon-label">WebGL Vendor</span>
+            <span class="recon-value" id="fp-webgl" style="font-size:11px;color:var(--text-dim);">—</span>
+          </div>
+          <div class="recon-item" style="flex-direction:column;align-items:flex-start;gap:4px;margin-top:8px;">
+            <span class="recon-label">WebGL Renderer</span>
+            <span class="recon-value" id="fp-webgl-render" style="font-size:11px;color:var(--text-dim);">—</span>
+          </div>
+          <div class="recon-item" style="flex-direction:column;align-items:flex-start;gap:4px;margin-top:8px;">
+            <span class="recon-label">Installed Plugins</span>
+            <span class="recon-value" id="fp-plugins" style="font-size:11px;color:var(--text-dim);">—</span>
+          </div>
+          <div class="recon-item" style="flex-direction:column;align-items:flex-start;gap:4px;margin-top:8px;">
+            <span class="recon-label">MIME Types</span>
+            <span class="recon-value" id="fp-mime" style="font-size:11px;color:var(--text-dim);">—</span>
+          </div>
+        </div>
+
+        <div class="recon-section">
+          <div class="recon-section-title">Hardware & Sensors</div>
+          <div class="recon-grid">
+            <div class="recon-item"><span class="recon-label">Battery</span><span class="recon-value" id="fp-battery">—</span></div>
+            <div class="recon-item"><span class="recon-label">Charging</span><span class="recon-value" id="fp-charging">—</span></div>
+            <div class="recon-item"><span class="recon-label">Bluetooth</span><span class="recon-value" id="fp-bt">—</span></div>
+            <div class="recon-item"><span class="recon-label">USB</span><span class="recon-value" id="fp-usb">—</span></div>
+            <div class="recon-item"><span class="recon-label">WebRTC</span><span class="recon-value" id="fp-webrtc">—</span></div>
+            <div class="recon-item"><span class="recon-label">WebAssembly</span><span class="recon-value" id="fp-wasm">—</span></div>
+            <div class="recon-item"><span class="recon-label">Service Worker</span><span class="recon-value" id="fp-sw">—</span></div>
+            <div class="recon-item"><span class="recon-label">Notifications</span><span class="recon-value" id="fp-notify">—</span></div>
+            <div class="recon-item"><span class="recon-label">Clipboard</span><span class="recon-value" id="fp-clipboard">—</span></div>
+            <div class="recon-item"><span class="recon-label">Media Devices</span><span class="recon-value" id="fp-media">—</span></div>
+            <div class="recon-item"><span class="recon-label">Gamepad</span><span class="recon-value" id="fp-gamepad">—</span></div>
+            <div class="recon-item"><span class="recon-label">VR Display</span><span class="recon-value" id="fp-vr">—</span></div>
+          </div>
+        </div>
+
+        <div class="recon-section">
+          <div class="recon-section-title">Network Exposure</div>
+          <div class="recon-grid">
+            <div class="recon-item"><span class="recon-label">Local IP</span><span class="recon-value" id="fp-localip">—</span></div>
+            <div class="recon-item"><span class="recon-label">Public IP</span><span class="recon-value" id="fp-publicip">—</span></div>
+            <div class="recon-item"><span class="recon-label">Referrer</span><span class="recon-value" id="fp-referrer">—</span></div>
+            <div class="recon-item"><span class="recon-label">Protocol</span><span class="recon-value" id="fp-protocol">—</span></div>
+          </div>
+        </div>
+
+        <div class="recon-section">
+          <div class="recon-section-title">Storage & Memory</div>
+          <div class="recon-grid">
+            <div class="recon-item"><span class="recon-label">LocalStorage</span><span class="recon-value" id="fp-ls">—</span></div>
+            <div class="recon-item"><span class="recon-label">SessionStorage</span><span class="recon-value" id="fp-ss">—</span></div>
+            <div class="recon-item"><span class="recon-label">IndexedDB</span><span class="recon-value" id="fp-idb">—</span></div>
+            <div class="recon-item"><span class="recon-label">Storage Quota</span><span class="recon-value" id="fp-quota">—</span></div>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div class="lab-serial" id="reconSerial">
+        <div class="serial-header">
+          <span>Recon Log — /dev/recon0 @ realtime</span>
+          <span style="color:var(--red)">● ACTIVE</span>
+        </div>
+        <div class="serial-output" id="reconOutput"></div>
+      </div>
+    </div>
+
+    <!-- METRICS TAB -->
+    <div class="right-tab-pane" id="right-metrics">
+      <div class="recon-header">
+        <div class="recon-title">📊 Live System Metrics</div>
+        <div class="recon-subtitle">Real-time browser performance & resource usage</div>
+        <div class="recon-status">
+          <span class="status-dot" style="background:var(--green);box-shadow:0 0 6px var(--green);"></span>
+          <span style="color:var(--green)">LIVE</span> — Metrics updating in real-time
+        </div>
+      </div>
+
+      <div class="recon-body" id="metricsBody">
+        <div id="metrics-shield" class="browser-shield" style="display:none;margin-bottom:20px;">
+          <div class="browser-shield-icon">🛡️</div>
+          <div>
+            <div style="font-weight:600;color:var(--green);margin-bottom:4px;">Memory metrics unavailable in <span id="metrics-browser-name">your browser</span></div>
+            <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">
+              JS heap tracking is a Chromium-only API. Your browser wisely refuses to expose it. Battery, Bluetooth, and USB APIs are similarly restricted.
+            </div>
+          </div>
+        </div>
+
+        <div class="recon-section">
+          <div class="recon-section-title">Memory Usage</div>
+          <div class="metric-row">
+            <span class="metric-label">JS Heap Used</span>
+            <div class="metric-bar-track"><div class="metric-bar-fill" id="metric-heap-used" style="width:0%"></div></div>
+            <span class="metric-value" id="metric-heap-used-text">—</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">JS Heap Total</span>
+            <div class="metric-bar-track"><div class="metric-bar-fill" id="metric-heap-total" style="width:0%"></div></div>
+            <span class="metric-value" id="metric-heap-total-text">—</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">JS Heap Limit</span>
+            <div class="metric-bar-track"><div class="metric-bar-fill" id="metric-heap-limit" style="width:0%"></div></div>
+            <span class="metric-value" id="metric-heap-limit-text">—</span>
+          </div>
+        </div>
+
+        <div class="recon-section">
+          <div class="recon-section-title">Performance</div>
+          <div class="recon-grid">
+            <div class="recon-item"><span class="recon-label">FPS</span><span class="recon-value" id="metric-fps">—</span></div>
+            <div class="recon-item"><span class="recon-label">DOM Nodes</span><span class="recon-value" id="metric-dom">—</span></div>
+            <div class="recon-item"><span class="recon-label">Event Listeners</span><span class="recon-value" id="metric-events">—</span></div>
+            <div class="recon-item"><span class="recon-label">Style Recalcs</span><span class="recon-value" id="metric-styles">—</span></div>
+            <div class="recon-item"><span class="recon-label">Layout Count</span><span class="recon-value" id="metric-layout">—</span></div>
+            <div class="recon-item"><span class="recon-label">Recalc Count</span><span class="recon-value" id="metric-recalc">—</span></div>
+          </div>
+        </div>
+
+        <div class="recon-section">
+          <div class="recon-section-title">Timing</div>
+          <div class="recon-grid">
+            <div class="recon-item"><span class="recon-label">Page Load</span><span class="recon-value" id="metric-load">—</span></div>
+            <div class="recon-item"><span class="recon-label">DOM Ready</span><span class="recon-value" id="metric-domready">—</span></div>
+            <div class="recon-item"><span class="recon-label">First Paint</span><span class="recon-value" id="metric-fp">—</span></div>
+            <div class="recon-item"><span class="recon-label">FCP</span><span class="recon-value" id="metric-fcp">—</span></div>
+            <div class="recon-item"><span class="recon-label">LCP</span><span class="recon-value" id="metric-lcp">—</span></div>
+            <div class="recon-item"><span class="recon-label">TTFB</span><span class="recon-value" id="metric-ttfb">—</span></div>
+          </div>
+        </div>
+
+        <div class="recon-section">
+          <div class="recon-section-title">Resources</div>
+          <div class="recon-grid">
+            <div class="recon-item"><span class="recon-label">Resources</span><span class="recon-value" id="metric-resources">—</span></div>
+            <div class="recon-item"><span class="recon-label">Transfer Size</span><span class="recon-value" id="metric-transfer">—</span></div>
+            <div class="recon-item"><span class="recon-label">Decoded Size</span><span class="recon-value" id="metric-decoded">—</span></div>
+            <div class="recon-item"><span class="recon-label">Images</span><span class="recon-value" id="metric-images">—</span></div>
+            <div class="recon-item"><span class="recon-label">Scripts</span><span class="recon-value" id="metric-scripts">—</span></div>
+            <div class="recon-item"><span class="recon-label">Stylesheets</span><span class="recon-value" id="metric-css">—</span></div>
+          </div>
+        </div>
+
+        <div class="recon-section">
+          <div class="recon-section-title">Battery & Power</div>
+          <div class="metric-row" style="margin-bottom:12px;">
+            <span class="metric-label">Battery Level</span>
+            <div class="metric-bar-track"><div class="metric-bar-fill" id="metric-battery-bar" style="width:0%"></div></div>
+            <span class="metric-value" id="metric-battery-text">—</span>
+          </div>
+          <div class="recon-grid">
+            <div class="recon-item"><span class="recon-label">Charging</span><span class="recon-value" id="metric-charging">—</span></div>
+            <div class="recon-item"><span class="recon-label">Charge Time</span><span class="recon-value" id="metric-chargetime">—</span></div>
+            <div class="recon-item"><span class="recon-label">Discharge Time</span><span class="recon-value" id="metric-dischargetime">—</span></div>
+            <div class="recon-item"><span class="recon-label">Power Source</span><span class="recon-value" id="metric-source">—</span></div>
+          </div>
+        </div>
+
+        <div class="recon-section">
+          <div class="recon-section-title">Session Activity</div>
+          <div class="recon-grid">
+            <div class="recon-item"><span class="recon-label">Uptime</span><span class="recon-value" id="metric-uptime">—</span></div>
+            <div class="recon-item"><span class="recon-label">Clicks</span><span class="recon-value" id="metric-clicks">0</span></div>
+            <div class="recon-item"><span class="recon-label">Keypresses</span><span class="recon-value" id="metric-keys">0</span></div>
+            <div class="recon-item"><span class="recon-label">Scroll Events</span><span class="recon-value" id="metric-scrolls">0</span></div>
+            <div class="recon-item"><span class="recon-label">Mouse X</span><span class="recon-value" id="metric-mousex">—</span></div>
+            <div class="recon-item"><span class="recon-label">Mouse Y</span><span class="recon-value" id="metric-mousey">—</span></div>
+          </div>
+        </div>
+
+        <div class="recon-section">
+          <div class="recon-section-title">Network Activity</div>
+          <div class="recon-grid">
+            <div class="recon-item"><span class="recon-label">Requests</span><span class="recon-value" id="metric-req-count">0</span></div>
+            <div class="recon-item"><span class="recon-label">Data In</span><span class="recon-value" id="metric-data-in">0 B</span></div>
+            <div class="recon-item"><span class="recon-label">Data Out</span><span class="recon-value" id="metric-data-out">0 B</span></div>
+            <div class="recon-item"><span class="recon-label">Avg Latency</span><span class="recon-value" id="metric-latency">—</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lab-serial" id="metricsSerial">
+        <div class="serial-header">
+          <span>Metrics Log — /dev/metrics0 @ 1000ms</span>
+          <span style="color:var(--green)">● LIVE</span>
+        </div>
+        <div class="serial-output" id="metricsOutput"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@18.0.9/lib/marked.umd.js" defer></script>
+<script src="app.js" defer></script>
+</body>
+</html>

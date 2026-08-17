@@ -1,0 +1,17 @@
+2026-07-15 — Opinion
+
+I've been thinking about the CAPTCHA recommendation I made for the university portal. It's the right short-term fix, but I want to be clear: CAPTCHA is not a security silver bullet.
+
+What CAPTCHA stops:
+- Unsophisticated automated scraping
+- Script-kiddie level attacks
+- Bulk enumeration without proxy rotation
+
+What CAPTCHA does NOT stop:
+- Credential stuffing with CAPTCHA-solving services
+- Manual attacks by determined adversaries
+- Attacks that bypass the UI entirely (API abuse)
+
+The real defense is layered: rate limiting + account lockout + strong passwords + MFA + audit logging + CAPTCHA. Each layer catches what the others miss.
+
+Don't let a CAPTCHA give you false confidence.

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Content Manager — ~/portfolio</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<header class="admin-header">
+  <div class="admin-header-left">
+    <a href="index.html" class="admin-back">&larr; Site</a>
+    <h1>Content Manager</h1>
+    <span class="admin-status" id="statusBadge">Loading…</span>
+  </div>
+  <div class="admin-header-right">
+    <button class="admin-btn" id="btnImportJson" title="Load a content.json file from disk">⬆ Import</button>
+    <input type="file" id="fileImport" accept=".json" hidden>
+    <button class="admin-btn" id="btnRawJson" title="View or bulk-edit the raw JSON">{ } Raw JSON</button>
+    <button class="admin-btn" id="btnConnectFolder" title="Connect your project folder to save directly (Chrome/Edge only)">📁 Connect folder</button>
+    <button class="admin-btn admin-btn-primary" id="btnSaveFolder" disabled>💾 Save to folder</button>
+    <button class="admin-btn admin-btn-primary" id="btnDownloadJson">⬇ Download content.json</button>
+  </div>
+</header>
+
+<main class="admin-main">
+  <aside class="admin-tree" id="tree"></aside>
+  <section class="admin-detail" id="detail">
+    <div class="admin-empty">Loading your content…</div>
+  </section>
+</main>
+
+<div class="admin-toast" id="toast"></div>
+
+<div class="admin-modal-backdrop" id="jsonModalBackdrop">
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <span>content.json — edit directly, or copy this out as a backup</span>
+      <button class="admin-btn admin-btn-sm" id="btnCloseJsonModal">✕ Close</button>
+    </div>
+    <textarea class="admin-json-textarea" id="jsonRawText" spellcheck="false"></textarea>
+    <div class="admin-modal-footer">
+      <span class="admin-status" id="jsonModalStatus" style="margin-right:auto;"></span>
+      <button class="admin-btn admin-btn-primary" id="btnApplyRawJson">Apply changes</button>
+    </div>
+  </div>
+</div>
+
+<script src="admin.js" defer></script>
+</body>
+</html>

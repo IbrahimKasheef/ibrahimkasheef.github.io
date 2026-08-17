@@ -1,0 +1,253 @@
+{
+  "profile": {
+    "name": "Your Name",
+    "role": "Security Researcher & Developer",
+    "badge": "Available for security research",
+    "heroSub": " I am interested in vulnerability assessment, penetration testing and physical security.",
+    "github": "https://github.com/IbrahimKasheef",
+    "twitter": "",
+    "email": "ibrahimkasheef1@gmail.com",
+    "location": "Bengaluru, India",
+    "formspreeId": "YOUR_FORM_ID",
+    "mastodon": "https://ioc.exchange/@ibrahim",
+    "discord": "https://discord.com/users/1018428009872625694",
+    "discordWebhookUrl": "https://discord.com/api/webhooks/1538860513948082196/L65xv7O8wC0Mt0TFJky3vMgw3ta7g9t23A-fuWh1KSyNDBnWVKYvYCqLqIX41o25NGeL"
+  },
+  "fs": {
+    "~": {
+      "type": "dir",
+      "items": [
+        {
+          "name": "about-me.txt",
+          "type": "file",
+          "src": "content/about.md",
+          "format": "md",
+          "size": "2.1K",
+          "tabLabel": "about-me.txt",
+          "tabIcon": "👤"
+        },
+        {
+          "name": "proof-of-concepts",
+          "type": "dir",
+          "path": "~/proof-of-concepts"
+        },
+        {
+          "name": "repositories",
+          "type": "dir",
+          "path": "~/repositories"
+        },
+        {
+          "name": "reports",
+          "type": "dir",
+          "path": "~/reports"
+        },
+        {
+          "name": "notes",
+          "type": "dir",
+          "path": "~/notes"
+        },
+        {
+          "name": "work-in-progress",
+          "type": "dir",
+          "path": "~/work-in-progress"
+        },
+        {
+          "name": "get-in-touch.sh",
+          "type": "exec",
+          "render": "contact",
+          "size": "512",
+          "tabLabel": "contact",
+          "tabIcon": "📧"
+        }
+      ]
+    },
+    "~/proof-of-concepts": {
+      "type": "dir",
+      "sectionId": "pocs",
+      "sectionHeading": "Proof of Concepts",
+      "sectionTag": "$ ls ./proof-of-concepts",
+      "sectionDesc": "Validated vulnerabilities, exploit chains and security findings from real-world assessments.",
+      "items": [
+        {
+          "name": "university-auth-bypass.md",
+          "type": "file",
+          "src": "https://raw.githubusercontent.com/IbrahimKasheef/university-admission-portal-security-assessment/refs/heads/main/auth-bypass-poc.md",
+          "format": "md",
+          "size": "4.2K",
+          "title": "University Portal Auth Bypass Chain",
+          "desc": "Plaintext cookies, verbose errors, and missing rate limits leading to full admin compromise across 200+ institutions.",
+          "icon": "🔓",
+          "tags": [
+            "Authentication",
+            "Critical",
+            "Disclosed"
+          ],
+          "date": "2026-07-29",
+          "repoUrl": "https://github.com/IbrahimKasheef/university-admission-portal-security-assessment"
+        },
+        {
+          "name": "data-exfiltration.md",
+          "type": "file",
+          "src": "https://raw.githubusercontent.com/IbrahimKasheef/university-admission-portal-data-exfiltration-assessment/refs/heads/main/data-exfiltration-poc.md",
+          "format": "md",
+          "size": "3.8K",
+          "title": "Mass Student Data Exfiltration",
+          "desc": "Post-auth automated enumeration script extracting PII, documents and academic records with zero defensive controls.",
+          "icon": "📁",
+          "tags": [
+            "Data Exposure",
+            "Critical",
+            "Disclosed"
+          ],
+          "date": "2026-07-29",
+          "repoUrl": "https://github.com/IbrahimKasheef/university-admission-portal-data-exfiltration-assessment/"
+        }
+      ],
+      "mountId": "pocsGrid",
+      "cardStyle": "grid",
+      "cardFooter": "tags"
+    },
+    "~/repositories": {
+      "type": "dir",
+      "sectionId": "repos",
+      "sectionHeading": "Repositories",
+      "sectionTag": "$ gh repo list",
+      "sectionDesc": "Open-source tools, scripts and experiments. Mostly security-related.",
+      "items": [
+        {
+          "name": "pcb-practice",
+          "type": "link",
+          "url": "https://github.com/IbrahimKasheef/pcb-practice",
+          "meta": "Kicad",
+          "desc": "pcb practice repo",
+          "icon": "📦",
+          "color": "amber",
+          "tags": [
+            "Kicad"
+          ],
+          "date": ""
+        }
+      ],
+      "mountId": "reposGrid",
+      "cardStyle": "grid",
+      "cardFooter": "tags"
+    },
+    "~/notes": {
+      "type": "dir",
+      "sectionId": "notes",
+      "sectionHeading": "Notes",
+      "sectionTag": "$ cat ./notes.txt",
+      "sectionDesc": "Quick thoughts, observations, and things I don't want to forget. Micro-updates between reports.",
+      "items": [
+        {
+          "name": "2026-07-15-captcha-thoughts.txt",
+          "type": "file",
+          "src": "content/notes/captcha-thoughts.txt",
+          "format": "txt",
+          "date": "2026-07-15",
+          "tags": [
+            "Opinion",
+            "Defense"
+          ],
+          "desc": "CAPTCHA is not a silver bullet. It stops automation but does nothing for credential stuffing with manual solving services. Layer your defenses."
+        }
+      ],
+      "mountId": "notesGrid",
+      "cardStyle": "notesGrid"
+    },
+    "~/work-in-progress": {
+      "type": "dir",
+      "render": "wip",
+      "sectionId": "wip",
+      "sectionHeading": "Work in Progress",
+      "sectionTag": "$ ps aux | grep wip",
+      "sectionDesc": "Projects currently being built, researched or refined.",
+      "items": [
+        {
+          "name": "mems-audio-board",
+          "type": "file",
+          "title": "MEMS audio board",
+          "meta": "20%",
+          "icon": "🚧",
+          "color": "amber",
+          "desc": "MEMS audio board for spatial filtering and beamforming.",
+          "showProgress": true
+        },
+        {
+          "name": "llm-fine-tuning",
+          "type": "file",
+          "title": "LLM Fine Tuning",
+          "meta": "85%",
+          "icon": "🚧",
+          "color": "green",
+          "desc": "Fine tuning the Mistral 7b parameter model on a laptop RTX 3080",
+          "showProgress": false
+        }
+      ],
+      "mountId": "wipGrid",
+      "cardStyle": "grid",
+      "cardFooter": "progress"
+    },
+    "~/reports": {
+      "type": "dir",
+      "sectionId": "reports",
+      "sectionHeading": "Reports",
+      "sectionTag": "$ cat ./reports/*.md",
+      "sectionDesc": "Write-ups, walkthroughs and thoughts on security research and development.",
+      "items": [
+        {
+          "name": "OWASP_University_Auth_Bypass_Report.md",
+          "type": "file",
+          "format": "md",
+          "src": "https://raw.githubusercontent.com/IbrahimKasheef/university-admission-portal-security-assessment/refs/heads/main/OWASP_WSTG_Security_Report.md",
+          "title": "",
+          "date": "2026-08-11",
+          "repoUrl": "https://github.com/IbrahimKasheef/university-admission-portal-security-assessment",
+          "desc": "Plaintext cookies, verbose errors and missing rate limits leading to full admin compromise across 200+ institutions.",
+          "color": "accent",
+          "tags": [
+            "Authentication",
+            "Critical",
+            "Disclosed"
+          ]
+        },
+        {
+          "name": "OWASP Data Exfiltration Report",
+          "type": "file",
+          "format": "md",
+          "src": "https://raw.githubusercontent.com/IbrahimKasheef/university-admission-portal-data-exfiltration-assessment/refs/heads/main/OWASP_WSTG_Data_Exfiltration_Report.md",
+          "title": "OWASP Data Exfiltration Report",
+          "date": "2026-08-11",
+          "desc": "Post-auth automated enumeration script extracting PII, documents and academic records with zero defensive controls.",
+          "tags": [
+            "Data Exposure",
+            "Critical",
+            "Disclosed"
+          ],
+          "color": "green",
+          "repoUrl": "https://github.com/IbrahimKasheef/university-admission-portal-data-exfiltration-assessment"
+        }
+      ],
+      "mountId": "reportsList",
+      "cardStyle": "reportsList"
+    }
+  },
+  "about": {
+    "whoami": "I am an Information Science & Engineering student at RV College of Engineering. I am passionate about penetration testing, building custom PCBs and competitive programming. I like working on projects, bug bounties and opportunities to contribute to security research. ",
+    "interests": "I am interested in vulnerability assessment, penetration testing and physical security. I also have experience in making OWASP WSTG reports and Proof of Concepts (PoCs) for vulnerabilities along with remediation steps and snippets.",
+    "skills": [
+      "Python",
+      "Burp Suite",
+      "OWASP Zap",
+      "bash",
+      "Penetration Testing",
+      "Vulnerability Assessment",
+      "Security Assessment & Testing",
+      "Report Writing",
+      "Reconnaissance",
+      "Kicad",
+      "Logisim"
+    ],
+    "currentFocus": "My current focus is to deepen my understanding about and practice more penetration testing."
+  }
+}

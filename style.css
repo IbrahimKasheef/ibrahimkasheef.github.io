@@ -1,0 +1,2056 @@
+
+:root {
+  --bg: #0c0c0c;
+  --bg-light: #141414;
+  --bg-lighter: #1e1e1e;
+  --border: #2a2a2a;
+  --border-light: #3a3a3a;
+  --text: #e0e0e0;
+  --text-dim: #6e6e6e;
+  --cyan: #5ccfe6;
+  --green: #7ee787;
+  --amber: #fbbf24;
+  --red: #ff7b72;
+  --magenta: #ff80bf;
+  --blue: #4d94ff;
+  --light-green: #a3e635;
+  --font: "SF Mono","Fira Code","Cascadia Code","Roboto Mono",Consolas,"Liberation Mono",Menlo,monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Split Layout */
+.split-container {
+  display: grid;
+  grid-template-columns: 65% 1fr;
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+}
+.resizer {
+  position: absolute;
+  left: 65%;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  background: transparent;
+  transform: translateX(-4px);
+  z-index: 100;
+  transition: background 0.15s;
+}
+.resizer:hover, .resizer.dragging {
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+}
+.resizer::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 40px;
+  background: var(--border-light);
+  border-radius: 1px;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+}
+.resizer:hover::after, .resizer.dragging::after {
+  opacity: 1;
+  background: var(--cyan);
+}
+.left-panel {
+  overflow: hidden;
+  height: 100%;
+}
+.split-container.web-mode .left-panel {
+  overflow: hidden;
+  width: 100%;
+}
+.right-panel {
+  overflow-y: auto;
+  background: #0a0a0a;
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.terminal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background: var(--bg);
+}
+
+/* Titlebar */
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--bg-lighter);
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+}
+.window-btns { display: flex; gap: 8px; }
+.wbtn {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.wbtn:hover { opacity: 0.7; }
+.wbtn.close { background: var(--red); }
+.wbtn.min { background: var(--amber); }
+.wbtn.max { background: var(--green); }
+.titlebar-side {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.titlebar-left { justify-content: flex-start; }
+.titlebar-right { justify-content: flex-end; }
+.title-text {
+  flex: 1 1 auto;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-dim);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Subtle nudge toward the web view for anyone who lands on the terminal
+   and doesn't immediately clock the toggle in the corner. */
+.web-hint {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--blue);
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.web-hint:hover {
+  border-color: rgba(77,148,255,0.35);
+  background: rgba(77,148,255,0.1);
+}
+.web-hint-arrow {
+  display: inline-block;
+}
+
+/* Tabbar */
+.tabbar {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 0 8px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabbar::-webkit-scrollbar { display: none; }
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  color: var(--text-dim);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  position: relative;
+  top: 1px;
+}
+.tab:hover { background: var(--bg-lighter); color: var(--text); }
+.tab.active { background: var(--bg); color: var(--text); border-color: var(--border-light); z-index: 2; }
+.tab-close {
+  width: 14px; height: 14px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 3px; font-size: 11px;
+  opacity: 0; transition: all 0.15s;
+}
+.tab:hover .tab-close, .tab.active .tab-close { opacity: 1; }
+.tab-close:hover { background: var(--red); color: var(--bg); opacity: 1; }
+.tab-new {
+  padding: 8px 12px;
+  color: var(--text-dim);
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.tab-new:hover { background: var(--bg-light); color: var(--text); }
+
+/* Terminal Body */
+.terminal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  background: var(--bg);
+  position: relative;
+}
+.terminal-body::-webkit-scrollbar { width: 8px; }
+.terminal-body::-webkit-scrollbar-track { background: var(--bg); }
+.terminal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.terminal-body::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
+
+/* Panes */
+.pane { display: none; }
+.pane.active { display: block; animation: fadeIn 0.15s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.pane-static-content { margin-bottom: 16px; }
+
+/* Logs & Prompts */
+.session-log { margin-bottom: 16px; }
+.log-cmd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+.log-output {
+  margin-bottom: 20px;
+  color: var(--text);
+  max-width: 100%;
+}
+.log-output.error { color: var(--red); }
+.log-output.success { color: var(--green); }
+.log-output.dim { color: var(--text-dim); }
+.log-output pre {
+  background: var(--bg-light); border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; margin: 14px 0;
+  font-size: 12px; line-height: 1.5;
+}
+.log-output .ascii-art {
+  color: var(--cyan);
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.prompt-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.cmd-input {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  outline: none;
+  flex: 1;
+  caret-color: var(--text);
+  min-width: 60px;
+}
+.cmd-input::placeholder { color: var(--text-dim); opacity: 0.4; }
+.type-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+  background: var(--text);
+  animation: blink 1s step-end infinite;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+.prompt {
+  color: var(--green);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.prompt-user { color: var(--cyan); }
+.prompt-host { color: var(--magenta); }
+.prompt-path { color: var(--amber); }
+.prompt-dollar { color: var(--text); }
+
+/* Directory Listings */
+.ls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 2px;
+  margin: 8px 0 16px 0;
+}
+.ls-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+}
+.ls-item:hover { background: var(--bg-light); }
+.ls-item .icon { width: 18px; text-align: center; flex-shrink: 0; }
+.ls-item .name {
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.ls-item.dir .name { color: var(--cyan); }
+.ls-item.file .name { color: var(--text); }
+.ls-item.exec .name { color: var(--green); }
+.ls-item.link .name { color: var(--magenta); }
+.ls-item .meta { margin-left: auto; font-size: 11px; color: var(--text-dim); white-space: nowrap; flex-shrink: 0; }
+
+/* Article Content (Markdown rendered) */
+.article-content { max-width: 100%; line-height: 1.8; }
+.article-content h2 {
+  font-size: 18px; font-weight: 700; color: var(--cyan);
+  margin-top: 28px; margin-bottom: 12px;
+  padding-bottom: 6px; border-bottom: 1px solid var(--border);
+}
+.article-content h3 {
+  font-size: 15px; font-weight: 700; color: var(--amber);
+  margin-top: 20px; margin-bottom: 10px;
+}
+.article-content h4 {
+  font-size: 13px; font-weight: 700; color: var(--text);
+  margin-top: 16px; margin-bottom: 8px;
+}
+.article-content p { margin-bottom: 14px; color: var(--text); }
+.article-content ul, .article-content ol { margin: 12px 0 16px 20px; }
+.article-content li { margin-bottom: 6px; }
+.article-content code {
+  background: var(--bg-light); padding: 2px 7px;
+  border-radius: 4px; font-size: 12px; color: var(--green);
+  border: 1px solid var(--border);
+}
+.article-content pre {
+  background: var(--bg-light); border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; margin: 14px 0;
+}
+.article-content pre code {
+  background: none; padding: 0; border: none;
+  color: var(--text); font-size: 12px;
+}
+.article-content blockquote {
+  border-left: 3px solid var(--cyan);
+  padding-left: 14px; margin: 14px 0;
+  color: var(--text-dim); font-style: italic;
+}
+.article-content a { color: var(--cyan); text-decoration: none; }
+.article-content a:hover { text-decoration: underline; }
+.article-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  display: block;
+  margin: 16px 0;
+}
+.article-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 13px;
+}
+.article-content th, .article-content td {
+  padding: 10px 16px;
+  text-align: left;
+  border: 1px solid var(--border);
+  vertical-align: top;
+}
+.article-content th {
+  background: var(--bg-light);
+  color: var(--cyan);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.article-content tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+.article-content .table-wrap { overflow-x: auto; margin: 16px 0; }
+.article-content .table-wrap table { margin: 0; }
+
+/* Tags */
+.tags { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0; }
+.tag {
+  padding: 2px 8px; border-radius: 4px;
+  font-size: 11px; border: 1px solid var(--border);
+  color: var(--text-dim);
+}
+.tag.critical { color: var(--red); border-color: rgba(255,123,114,0.3); }
+.tag.high { color: var(--amber); border-color: rgba(251,191,36,0.3); }
+.tag.info { color: var(--cyan); border-color: rgba(92,207,230,0.3); }
+.tag.fixed { color: var(--green); border-color: rgba(126,231,135,0.3); }
+
+/* Skills */
+.skill-bar { display: flex; align-items: center; gap: 12px; margin: 6px 0; }
+.skill-name { width: 120px; font-size: 12px; color: var(--text-dim); }
+.skill-track {
+  flex: 1; height: 6px;
+  background: var(--bg-light); border-radius: 3px;
+  overflow: hidden; border: 1px solid var(--border);
+}
+.skill-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+  border-radius: 3px; transition: width 0.6s ease;
+}
+
+/* Forms */
+.term-form { max-width: 500px; }
+.term-form .field { margin-bottom: 14px; }
+.term-form label {
+  display: block; color: var(--text-dim);
+  font-size: 12px; margin-bottom: 4px;
+}
+.term-form input, .term-form textarea {
+  width: 100%; padding: 8px 12px;
+  background: var(--bg-light); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text);
+  font-family: var(--font); font-size: 13px;
+  outline: none; transition: border-color 0.2s;
+}
+.term-form input:focus, .term-form textarea:focus { border-color: var(--cyan); }
+.term-form input::placeholder, .term-form textarea::placeholder { color: var(--text-dim); opacity: 0.5; }
+.term-form textarea { min-height: 80px; resize: vertical; }
+.term-btn {
+  padding: 8px 18px; background: var(--green);
+  color: var(--bg); border: none; border-radius: 6px;
+  font-family: var(--font); font-size: 12px;
+  font-weight: 600; cursor: pointer; transition: opacity 0.15s;
+}
+.term-btn:hover { opacity: 0.85; }
+
+/* Back links */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 12px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--cyan); }
+
+/* TXT file rendering */
+.txt-content {
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 20px;
+  font-family: var(--font);
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-width: 100%;
+}
+.txt-content .txt-date {
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  display: block;
+}
+
+/* PDF rendering */
+.pdf-content {
+  width: 100%;
+  height: 70vh;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-light);
+}
+.pdf-fallback {
+  padding: 20px;
+  color: var(--text-dim);
+  text-align: center;
+}
+.pdf-fallback a { color: var(--cyan); }
+
+/* Loading */
+.loading-text {
+  color: var(--text-dim);
+  font-style: italic;
+  padding: 12px 0;
+}
+
+/* Recon Panel */
+.recon-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-lighter);
+  flex-shrink: 0;
+}
+.recon-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.5px;
+}
+.recon-subtitle {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.recon-status {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.recon-body {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: var(--bg);
+}
+.recon-section {
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  background: var(--bg-light);
+}
+.recon-section-title {
+  font-size: 10px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+.recon-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.recon-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: var(--bg);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.recon-label {
+  font-size: 10px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.recon-value {
+  font-size: 12px;
+  color: var(--cyan);
+  font-weight: 500;
+  text-align: right;
+}
+.recon-value.red { color: var(--red); }
+.recon-value.amber { color: var(--amber); }
+.recon-value.green { color: var(--green); }
+.recon-value.magenta { color: var(--magenta); }
+
+.recon-warning {
+  border: 1px solid rgba(251,191,36,0.2);
+  border-radius: 8px;
+  padding: 16px;
+  background: rgba(251,191,36,0.04);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.recon-warning-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Right Panel Tabs */
+.right-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-lighter);
+  flex-shrink: 0;
+}
+.right-tab {
+  flex: 1;
+  padding: 10px 12px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  user-select: none;
+}
+.right-tab:hover {
+  color: var(--text);
+  background: var(--bg-light);
+}
+.right-tab.active {
+  color: var(--cyan);
+  border-bottom-color: var(--cyan);
+  background: var(--bg);
+}
+.right-tab-pane {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+.right-tab-pane.active {
+  display: flex;
+}
+
+/* Metric Bars */
+.metric-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.metric-label {
+  width: 90px;
+  font-size: 10px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+.metric-bar-track {
+  flex: 1;
+  height: 6px;
+  background: var(--bg);
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.metric-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+.metric-bar-fill.amber { background: linear-gradient(90deg, var(--amber), var(--red)); }
+.metric-bar-fill.red { background: linear-gradient(90deg, var(--red), #c0392b); }
+.metric-value {
+  width: 70px;
+  font-size: 11px;
+  color: var(--text);
+  text-align: right;
+  flex-shrink: 0;
+  font-family: var(--font);
+}
+.lab-serial {
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  padding: 10px 16px;
+  max-height: 140px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+.serial-header {
+  color: var(--text-dim);
+  font-size: 10px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  justify-content: space-between;
+}
+.serial-output {
+  font-family: var(--font);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.serial-line {
+  color: var(--green);
+  margin-bottom: 2px;
+  opacity: 0;
+  animation: fadeInLine 0.3s forwards;
+}
+@keyframes fadeInLine {
+  to { opacity: 1; }
+}
+.serial-line.dim { color: var(--text-dim); }
+.serial-line.amber { color: var(--amber); }
+.serial-line.cyan { color: var(--cyan); }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .split-container { grid-template-columns: 1fr !important; }
+  /* Terminal mode stacks the terminal above the recon/metrics panel.
+     Web mode has no second panel (it's display:none), so it must NOT
+     get a two-row template — otherwise the reserved-but-empty second
+     row silently squashes #webView into half the viewport height,
+     clipping everything below that point. */
+  .split-container:not(.web-mode) { grid-template-rows: 1fr 1fr; }
+  .resizer { display: none; }
+  .right-panel { border-left: none; border-top: 1px solid var(--border); }
+}
+@media (max-width: 640px) {
+  .terminal-body { padding: 14px 16px; }
+  .ls-grid { grid-template-columns: 1fr; }
+  .title-text { font-size: 11px; }
+  .tab { padding: 6px 10px; font-size: 11px; }
+  .web-hint-text { display: none; }
+  .web-hint { padding: 4px 6px; }
+}
+@media (max-width: 420px) {
+  .web-hint { display: none; }
+}
+
+
+/* Collapsed right panel (drag beyond 75%) */
+.split-container.right-collapsed {
+  grid-template-columns: 100% 0px !important;
+}
+.split-container.right-collapsed .right-panel {
+  display: none;
+}
+.split-container.right-collapsed .resizer {
+  left: calc(100% - 4px) !important;
+  background: var(--border-light);
+}
+.split-container.right-collapsed .resizer::after {
+  opacity: 1;
+  background: var(--cyan);
+}
+
+
+/* Browser Shield Banner */
+.browser-shield {
+  border: 1px solid rgba(126,231,135,0.2);
+  border-radius: 8px;
+  padding: 16px;
+  background: rgba(126,231,135,0.04);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  animation: fadeIn 0.4s ease;
+}
+.browser-shield-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ============================================
+   Terminal Theme Portfolio
+   ============================================ */
+
+:root {
+  --web-bg: #0a0e14;
+  --web-surface: #111820;
+  --web-surface-hover: #1a2330;
+  --web-border: #212b3a;
+  --web-text: #e6edf3;
+  --web-text-secondary: #8b949e;
+  --web-text-dim: #5c6773;
+  --web-accent: #7dd3fc;
+  --web-accent-dim: rgba(125, 211, 252, 0.1);
+  --web-amber: #fbbf24;
+  --web-green: #7ee787;
+  --web-red: #ff7b72;
+  --web-magenta: #ff80bf;
+  --web-blue: #4d94ff;
+  --web-light-green: #a3e635;
+  --web-radius: 12px;
+  --web-radius-sm: 8px;
+  --web-max-width: 880px;
+  --web-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --web-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, monospace;
+}
+
+#webView, #webView * { margin: 0; padding: 0; box-sizing: border-box; }
+
+#webView { scroll-behavior: smooth; }
+
+#webView {
+  font-family: var(--web-font);
+  background: var(--web-bg);
+  color: var(--web-text);
+  line-height: 1.6;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ── Background Layers ── */
+
+/* Layer 1: Animated gradient blobs */
+#webView::before {
+  content: "";
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background:
+    radial-gradient(ellipse 700px 700px at 25% 25%, rgba(125, 211, 252, 0.05) 0%, transparent 70%),
+    radial-gradient(ellipse 600px 600px at 75% 75%, rgba(126, 231, 135, 0.035) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 500px at 50% 50%, rgba(251, 191, 36, 0.025) 0%, transparent 70%);
+  animation: bgShift 25s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes bgShift {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(1.5%, 1%) rotate(0.5deg); }
+  66% { transform: translate(-1%, 1.5%) rotate(-0.5deg); }
+}
+
+/* Layer 2: Dot grid */
+#webView .dot-grid {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(circle at center, rgba(125, 211, 252, 0.07) 0.6px, transparent 0.6px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Layer 3: Vignette */
+#webView .vignette {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(10, 14, 20, 0.4) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Scrollbar */
+#webView::-webkit-scrollbar { width: 8px; }
+#webView::-webkit-scrollbar-track { background: var(--web-bg); }
+#webView::-webkit-scrollbar-thumb { background: var(--web-border); border-radius: 4px; }
+#webView::-webkit-scrollbar-thumb:hover { background: var(--web-text-secondary); }
+
+/* ── Navigation ── */
+#webView nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10, 14, 20, 0.88);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--web-border);
+}
+
+#webView .nav-inner {
+  max-width: var(--web-max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#webView .logo {
+  font-family: var(--web-mono);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--web-accent);
+  text-decoration: none;
+  letter-spacing: -0.3px;
+}
+
+#webView .logo::before {
+  content: "~/";
+  color: var(--web-text-secondary);
+}
+
+#webView .nav-links {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+}
+
+#webView .nav-links a {
+  color: var(--web-text-secondary);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.2s;
+  position: relative;
+}
+
+#webView .nav-links a:hover, #webView .nav-links a.active {
+  color: var(--web-text);
+}
+
+#webView .nav-links a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--web-accent);
+  transition: width 0.2s;
+  border-radius: 1px;
+}
+
+#webView .nav-links a:hover::after, #webView .nav-links a.active::after {
+  width: 100%;
+}
+
+/* ── Sections ── */
+#webView section {
+  max-width: var(--web-max-width);
+  margin: 0 auto;
+  padding: 70px 24px;
+  position: relative;
+  z-index: 1;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+}
+
+/* ── Hero ── */
+#webView #home {
+  padding-top: 90px;
+  padding-bottom: 50px;
+}
+
+#webView .hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--web-accent-dim);
+  border: 1px solid rgba(125, 211, 252, 0.2);
+  color: var(--web-accent);
+  font-family: var(--web-mono);
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 100px;
+  margin-bottom: 22px;
+}
+
+#webView .hero-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: var(--web-green);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--web-green);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+#webView h1 {
+  font-size: 46px;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  margin-bottom: 18px;
+}
+
+#webView h1 .accent {
+  color: var(--web-accent);
+}
+
+#webView .hero-sub {
+  font-size: 17px;
+  color: var(--web-text-secondary);
+  max-width: 500px;
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+#webView .hero-links {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+#webView .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--web-radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+#webView .btn-primary {
+  background: var(--web-accent);
+  color: var(--web-bg);
+}
+
+#webView .btn-primary:hover {
+  background: #a5e1fd;
+  transform: translateY(-1px);
+}
+
+#webView .btn-ghost {
+  background: transparent;
+  border-color: var(--web-border);
+  color: var(--web-text);
+}
+
+#webView .btn-ghost:hover {
+  border-color: var(--web-text-secondary);
+  background: var(--web-surface);
+}
+
+/* ── Section headers ── */
+#webView .section-header {
+  margin-bottom: 36px;
+}
+
+#webView .section-tag {
+  font-family: var(--web-mono);
+  font-size: 12px;
+  color: var(--web-accent);
+  margin-bottom: 8px;
+  display: block;
+}
+
+#webView h2 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+
+#webView .section-desc {
+  color: var(--web-text-secondary);
+  font-size: 15px;
+  max-width: 500px;
+}
+
+/* ── Terminal Window (About) ── */
+#webView .terminal-window {
+  background: var(--web-surface);
+  border: 1px solid var(--web-border);
+  border-radius: var(--web-radius);
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+#webView .terminal-window:hover {
+  border-color: rgba(125, 211, 252, 0.25);
+}
+
+#webView .terminal-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(10, 14, 20, 0.6);
+  border-bottom: 1px solid var(--web-border);
+}
+
+#webView .terminal-btn {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+#webView .terminal-btn.red { background: var(--web-red); }
+#webView .terminal-btn.amber { background: var(--web-amber); }
+#webView .terminal-btn.green { background: var(--web-green); }
+
+#webView .terminal-title {
+  font-family: var(--web-mono);
+  font-size: 11px;
+  color: var(--web-text-secondary);
+  margin-left: 8px;
+}
+
+#webView .terminal-body {
+  padding: 24px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+#webView .terminal-line {
+  margin-bottom: 16px;
+}
+
+#webView .terminal-line:last-child {
+  margin-bottom: 0;
+}
+
+#webView .terminal-prompt {
+  font-family: var(--web-mono);
+  color: var(--web-accent);
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+}
+
+#webView .terminal-prompt::before {
+  content: "> ";
+}
+
+#webView .terminal-output {
+  color: var(--web-text);
+  padding-left: 0;
+}
+
+#webView .terminal-output a {
+  color: var(--web-accent);
+  text-decoration: none;
+}
+
+#webView .terminal-output a:hover {
+  text-decoration: underline;
+}
+
+#webView .skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+#webView .skill-tag {
+  font-family: var(--web-mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: var(--web-bg);
+  border: 1px solid var(--web-border);
+  color: var(--web-text-secondary);
+  transition: all 0.2s;
+}
+
+#webView .skill-tag:hover {
+  border-color: var(--web-accent);
+  color: var(--web-accent);
+}
+
+/* Blinking cursor */
+#webView .cursor-blink::after {
+  content: "▋";
+  color: var(--web-accent);
+  animation: blink 1s step-end infinite;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* ── Cards grid ── */
+#webView .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+#webView .card {
+  background: var(--web-surface);
+  border: 1px solid var(--web-border);
+  border-radius: var(--web-radius);
+  padding: 24px;
+  transition: all 0.2s;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+
+#webView .card:hover {
+  border-color: rgba(125, 211, 252, 0.3);
+  background: var(--web-surface-hover);
+  transform: translateY(-2px);
+}
+
+#webView .card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+#webView .card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--web-radius-sm);
+  background: var(--web-accent-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+/* Icon tint classes — used by card-icon and the WIP progress icons.
+   Content items pick a color name in content.json (see the "icon"/"color"
+   fields) rather than authoring one-off inline styles per card. */
+#webView .card-icon.tint-accent { background: var(--web-accent-dim); color: var(--web-accent); }
+#webView .card-icon.tint-amber  { background: rgba(251, 191, 36, 0.1); color: var(--web-amber); }
+#webView .card-icon.tint-green  { background: rgba(126, 231, 135, 0.1); color: var(--web-green); }
+#webView .card-icon.tint-red    { background: rgba(255, 123, 114, 0.1); color: var(--web-red); }
+#webView .card-icon.tint-magenta{ background: rgba(255, 128, 191, 0.1); color: var(--web-magenta); }
+
+#webView .card-date {
+  font-family: var(--web-mono);
+  font-size: 11px;
+  color: var(--web-text-secondary);
+}
+
+#webView .card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+#webView .card p {
+  font-size: 13px;
+  color: var(--web-text-secondary);
+  line-height: 1.5;
+  flex: 1;
+}
+
+#webView .card-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+#webView .tag {
+  font-family: var(--web-mono);
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: var(--web-accent-dim);
+  color: var(--web-accent);
+  border: 1px solid rgba(125, 211, 252, 0.15);
+}
+
+#webView .tag-amber { background: rgba(251, 191, 36, 0.1); color: var(--web-amber); border-color: rgba(251, 191, 36, 0.2); }
+#webView .tag-red { background: rgba(255, 123, 114, 0.1); color: var(--web-red); border-color: rgba(255, 123, 114, 0.2); }
+#webView .tag-green { background: rgba(126, 231, 135, 0.1); color: var(--web-green); border-color: rgba(126, 231, 135, 0.2); }
+#webView .tag-accent { background: var(--web-accent-dim); color: var(--web-accent); border-color: rgba(125, 211, 252, 0.2); }
+#webView .tag-magenta { background: rgba(255, 128, 191, 0.1); color: var(--web-magenta); border-color: rgba(255, 128, 191, 0.2); }
+
+/* ── Report list ── */
+#webView .report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#webView .report-item {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--web-surface);
+  border: 1px solid var(--web-border);
+  border-radius: var(--web-radius);
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s;
+}
+
+#webView .report-item:hover {
+  border-color: rgba(125, 211, 252, 0.3);
+  background: var(--web-surface-hover);
+}
+
+#webView .report-date {
+  font-family: var(--web-mono);
+  font-size: 12px;
+  color: var(--web-text-secondary);
+  white-space: nowrap;
+  min-width: 100px;
+}
+
+#webView .report-title {
+  font-weight: 600;
+  font-size: 15px;
+  flex: 1;
+}
+
+#webView .report-arrow {
+  color: var(--web-text-secondary);
+  transition: transform 0.2s, color 0.2s;
+}
+
+#webView .report-item:hover .report-arrow {
+  color: var(--web-accent);
+  transform: translateX(4px);
+}
+
+/* ── Notes section ── */
+#webView .notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+#webView .note-card {
+  background: var(--web-surface);
+  border: 1px solid var(--web-border);
+  border-radius: var(--web-radius);
+  padding: 20px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+#webView .note-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--web-accent), var(--web-green));
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+#webView .note-card:hover {
+  border-color: rgba(125, 211, 252, 0.3);
+  background: var(--web-surface-hover);
+  transform: translateY(-2px);
+}
+
+#webView .note-card:hover::before {
+  opacity: 1;
+}
+
+#webView .note-date {
+  font-family: var(--web-mono);
+  font-size: 11px;
+  color: var(--web-text-secondary);
+  margin-bottom: 10px;
+}
+
+#webView .note-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--web-text);
+}
+
+#webView .note-text a {
+  color: var(--web-accent);
+  text-decoration: none;
+}
+
+#webView .note-text a:hover {
+  text-decoration: underline;
+}
+
+#webView .note-text code {
+  background: var(--web-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--web-mono);
+  font-size: 12px;
+  color: var(--web-accent);
+}
+
+#webView .note-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+/* ── WIP Progress ── */
+#webView .wip-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--web-border);
+  border-radius: 2px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+#webView .wip-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+#webView .wip-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-family: var(--web-mono);
+  font-size: 11px;
+  color: var(--web-text-secondary);
+}
+
+/* ── Contact section ── */
+#webView #contact {
+  padding-bottom: 40px;
+}
+
+#webView .contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+#webView .contact-info h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+#webView .contact-info p {
+  color: var(--web-text-secondary);
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+#webView .contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#webView .contact-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--web-surface);
+  border: 1px solid var(--web-border);
+  border-radius: var(--web-radius-sm);
+  color: var(--web-text);
+  text-decoration: none;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+#webView .contact-link:hover {
+  border-color: rgba(125, 211, 252, 0.3);
+  background: var(--web-surface-hover);
+  color: var(--web-accent);
+}
+
+#webView .contact-link svg {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+#webView .contact-form {
+  background: var(--web-surface);
+  border: 1px solid var(--web-border);
+  border-radius: var(--web-radius);
+  padding: 28px;
+}
+
+#webView .form-group {
+  margin-bottom: 16px;
+}
+
+#webView .form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--web-text-secondary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#webView .form-group input, #webView .form-group textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--web-bg);
+  border: 1px solid var(--web-border);
+  border-radius: var(--web-radius-sm);
+  color: var(--web-text);
+  font-family: var(--web-font);
+  font-size: 14px;
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+#webView .form-group input:focus, #webView .form-group textarea:focus {
+  border-color: var(--web-accent);
+}
+
+#webView .form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+#webView .form-group input::placeholder, #webView .form-group textarea::placeholder {
+  color: var(--web-text-secondary);
+  opacity: 0.5;
+}
+
+#webView .form-submit {
+  width: 100%;
+  justify-content: center;
+  padding: 12px;
+  font-size: 14px;
+}
+#webView .form-status {
+  margin-top: 12px;
+  font-size: 13px;
+  min-height: 18px;
+}
+.form-status.success { color: var(--web-green); }
+.form-status.error { color: var(--web-red); }
+
+/* ── Article / Detail pages ── */
+#webView .article-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 60px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+#webView .article-header {
+  margin-bottom: 40px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid var(--web-border);
+}
+
+#webView .article-meta {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+#webView .article-date {
+  font-family: var(--web-mono);
+  font-size: 12px;
+  color: var(--web-text-secondary);
+}
+
+#webView .article-tags {
+  display: flex;
+  gap: 6px;
+}
+
+#webView .article-title {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+#webView .article-subtitle {
+  font-size: 16px;
+  color: var(--web-text-secondary);
+  line-height: 1.5;
+}
+
+#webView .article-body {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--web-text);
+}
+
+#webView .article-body h2 {
+  font-size: 22px;
+  margin-top: 40px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--web-border);
+}
+
+#webView .article-body h3 {
+  font-size: 18px;
+  margin-top: 28px;
+  margin-bottom: 12px;
+  color: var(--web-accent);
+}
+
+#webView .article-body p {
+  margin-bottom: 16px;
+}
+
+#webView .article-body code {
+  background: var(--web-bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: var(--web-mono);
+  font-size: 13px;
+  color: var(--web-accent);
+}
+
+#webView .article-body pre {
+  background: var(--web-bg);
+  border: 1px solid var(--web-border);
+  border-radius: var(--web-radius-sm);
+  padding: 16px;
+  overflow-x: auto;
+  margin: 20px 0;
+}
+
+#webView .article-body pre code {
+  background: none;
+  padding: 0;
+  font-size: 13px;
+  color: var(--web-text);
+}
+
+#webView .article-body blockquote {
+  border-left: 3px solid var(--web-accent);
+  padding-left: 16px;
+  margin: 20px 0;
+  color: var(--web-text-secondary);
+  font-style: italic;
+}
+
+#webView .article-body ul, #webView .article-body ol {
+  margin: 16px 0;
+  padding-left: 24px;
+}
+
+#webView .article-body li {
+  margin-bottom: 8px;
+}
+
+#webView .article-body a {
+  color: var(--web-accent);
+  text-decoration: none;
+}
+
+#webView .article-body a:hover {
+  text-decoration: underline;
+}
+
+#webView .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--web-text-secondary);
+  text-decoration: none;
+  font-size: 13px;
+  margin-bottom: 24px;
+  transition: color 0.2s;
+}
+
+#webView .back-link:hover {
+  color: var(--web-accent);
+}
+
+/* ── Footer ── */
+#webView footer {
+  border-top: 1px solid var(--web-border);
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--web-text-secondary);
+  font-size: 13px;
+  position: relative;
+  z-index: 1;
+}
+
+#webView footer a {
+  color: var(--web-accent);
+  text-decoration: none;
+}
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  #webView h1 { font-size: 32px; }
+  #webView h2 { font-size: 22px; }
+  #webView .article-title { font-size: 24px; }
+  #webView .nav-inner { padding: 0 16px; gap: 12px; }
+  #webView .nav-links {
+    gap: 14px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    mask-image: linear-gradient(to right, transparent, black 12px, black calc(100% - 12px), transparent);
+  }
+  #webView .nav-links::-webkit-scrollbar { display: none; }
+  #webView .nav-links a { font-size: 12px; flex-shrink: 0; }
+  #webView section { padding: 50px 20px; }
+  #webView .report-item { flex-direction: column; gap: 4px; }
+  #webView .report-date { min-width: auto; }
+  #webView .contact-grid { grid-template-columns: 1fr; }
+  #webView .terminal-body { padding: 16px; }
+}
+
+/* Fade in */
+#webView .fade-in {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* Theme Toggle */
+.theme-toggle {
+  padding: 4px 12px;
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: var(--bg-lighter);
+}
+
+/* Web Mode */
+.split-container.web-mode {
+  grid-template-columns: 100% 0px;
+}
+.split-container.web-mode .right-panel {
+  display: none;
+}
+.split-container.web-mode .resizer {
+  left: calc(100% - 4px);
+  background: transparent;
+}
+.split-container.web-mode .resizer::after {
+  opacity: 0.3;
+}
+.split-container.web-mode .resizer:hover::after {
+  opacity: 1;
+  background: var(--cyan);
+}
+.split-container.web-mode.terminal-visible {
+  /* grid-template-columns is controlled by JS */
+}
+.split-container.web-mode.terminal-visible .right-panel {
+  display: flex;
+}
+
+
+/* Performance optimizations */
+#webView {
+  /* contain removed for smooth scrolling */
+}
+#webView .card,
+#webView .note-card,
+#webView .report-item {
+  /* GPU layers removed - causes scroll jank with many cards */
+}
+#contentViewer {
+  transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.98);
+  pointer-events: none;
+}
+#contentViewer.open {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  pointer-events: auto;
+}
+#cvBody {
+  /* contain removed for smoother rendering */
+}
+/* Content Viewer */
+#contentViewer {
+  font-family: var(--web-font);
+  color: var(--web-text);
+}
+#cvBody {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--web-text);
+}
+#cvBody h2 {
+  font-size: 22px;
+  margin-top: 32px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--web-border);
+  color: var(--web-text);
+}
+#cvBody h3 {
+  font-size: 18px;
+  margin-top: 24px;
+  margin-bottom: 12px;
+  color: var(--web-accent);
+}
+#cvBody p { margin-bottom: 16px; }
+#cvBody pre {
+  background: var(--web-bg);
+  border: 1px solid var(--web-border);
+  border-radius: var(--web-radius-sm);
+  padding: 16px;
+  overflow-x: auto;
+  margin: 20px 0;
+  font-family: var(--web-mono);
+  font-size: 13px;
+  color: var(--web-text);
+}
+#cvBody code {
+  background: var(--web-bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: var(--web-mono);
+  font-size: 13px;
+  color: var(--web-accent);
+}
+#cvBody pre code { background: none; padding: 0; }
+#cvBody blockquote {
+  border-left: 3px solid var(--web-accent);
+  padding-left: 16px;
+  margin: 20px 0;
+  color: var(--web-text-secondary);
+  font-style: italic;
+}
+#cvBody ul, #cvBody ol { margin: 16px 0; padding-left: 24px; }
+#cvBody li { margin-bottom: 8px; }
+#cvBody a { color: var(--web-accent); text-decoration: none; }
+#cvBody a:hover { text-decoration: underline; }
+#cvBody img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--web-border);
+  display: block;
+  margin: 20px 0;
+}
+#cvBody table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 14px;
+}
+#cvBody th, #cvBody td {
+  padding: 12px 18px;
+  text-align: left;
+  border: 1px solid var(--web-border);
+  vertical-align: top;
+}
+#cvBody th {
+  background: var(--web-surface);
+  color: var(--web-accent);
+  font-weight: 700;
+  white-space: nowrap;
+}
+#cvBody tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+#cvBody .table-wrap { overflow-x: auto; margin: 20px 0; }
+#cvBody .table-wrap table { margin: 0; }
+#cvBody embed, #cvBody iframe {
+  width: 100%;
+  height: 70vh;
+  border-radius: 8px;
+  border: 1px solid var(--web-border);
+  background: var(--web-bg);
+}
+
+/* ============================================
+   MOBILE OS UI (Android / iOS only — gated by
+   the JS-applied .mobile-os class on <html>,
+   NOT a viewport media query, so a resized
+   desktop window never gets this treatment)
+   ============================================ */
+
+/* Small, consistent icon buttons — hidden everywhere by default, opted
+   into visibility per-context below via .mobile-os */
+.nav-icon-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-os .nav-icon-btn { display: flex; color: var(--web-text-secondary); }
+.mobile-os .nav-icon-btn:active { background: var(--web-surface); }
+.mobile-os #webView .nav-terminal-btn {
+  width: auto;
+  padding: 0 12px;
+  font-size: 13px;
+  font-family: var(--web-mono);
+  gap: 6px;
+}
+
+/* Web view nav: swap the desktop link row for the icon cluster.
+   Needs the #webView prefix to out-specificity the existing
+   "#webView .nav-links" rule (an ID beats any number of plain classes). */
+.mobile-os #webView .nav-links { display: none; }
+.mobile-os .nav-mobile-controls { display: flex; align-items: center; gap: 2px; }
+.nav-mobile-controls { display: none; }
+
+/* Terminal titlebar: mobile-only recon shortcut, hide the desktop hint
+   (redundant once the icon cluster + mobile-default-web-view exist) */
+.mobile-os .titlebar-recon-btn { width: 34px; height: 34px; font-size: 15px; }
+.mobile-os .web-hint { display: none; }
+
+/* Slide-in "jump to" menu (the hamburger's overlay panel) */
+.mobile-nav-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: rgba(10, 14, 20, 0.7);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+.mobile-nav-overlay.open { opacity: 1; visibility: visible; }
+.mobile-nav-panel {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: min(78vw, 300px);
+  background: var(--web-surface);
+  border-left: 1px solid var(--web-border);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+  overflow-y: auto;
+}
+.mobile-nav-overlay.open .mobile-nav-panel { transform: translateX(0); }
+/* #webView prefix needed on these three: "#webView, #webView *" is an
+   ID-based reset (margin:0; padding:0;) that otherwise silently beats a
+   plain .mobile-nav-* class rule — same root cause as the nav-links fix
+   above, just tripped up padding/spacing here instead of display. */
+#webView .mobile-nav-panel { padding-bottom: 20px; }
+#webView .mobile-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--web-border);
+  color: var(--web-text-secondary);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.mobile-nav-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--web-text);
+  font-size: 16px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-nav-close:active { background: var(--web-surface-hover); }
+#webView .mobile-nav-link {
+  padding: 16px 20px;
+  color: var(--web-text);
+  text-decoration: none;
+  font-size: 15px;
+  border-bottom: 1px solid var(--web-border);
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-nav-link:active { background: var(--web-surface); }
+.mobile-nav-link.mobile-nav-terminal { color: var(--web-accent); font-family: var(--web-mono); }
+
+/* Fullscreen recon/metrics overlay — reuses the existing .right-panel
+   markup verbatim; on mobile it's hidden until opened, then pinned over
+   the entire viewport regardless of which view (terminal or web) is
+   showing underneath. */
+.mobile-os .right-panel { display: none; }
+.mobile-os .right-panel.mobile-recon-open {
+  display: flex;
+  position: fixed;
+  inset: 0;
+  z-index: 2500;
+  width: 100vw;
+  height: 100vh;
+  border: none;
+}
+/* Neither view should reserve empty grid space for a panel that's
+   hidden until opened as an overlay (this is what previously caused
+   web-mode's content to get silently clipped in half — same fix,
+   applied here for the mobile-default terminal case too). */
+.mobile-os .split-container:not(.web-mode) { grid-template-rows: 1fr; }
+
+.right-panel-close {
+  display: none;
+  flex-shrink: 0;
+  width: 44px;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 16px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.right-panel-close:active { background: var(--bg-light); color: var(--text); }
+.mobile-os .right-panel.mobile-recon-open .right-panel-close { display: block; }
